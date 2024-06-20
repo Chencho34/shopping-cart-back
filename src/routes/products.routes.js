@@ -7,7 +7,6 @@ const router = Router()
 router.post('/register', registerUser)
 router.post('/login', loginUser)
 
-
 router.get('/users', getUsers)
 router.post('/users', createUser)
 router.get('/products', getAllProducts)

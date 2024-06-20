@@ -6,7 +6,6 @@ const productsRoutes = require('./routes/products.routes')
 
 const app = express()
 
-
 app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
@@ -22,4 +21,3 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
   console.log('server in port 3000', process.env.DB_PORT)
 })
-
