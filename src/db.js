@@ -2,17 +2,11 @@ const { Pool } = require('pg')
 // const { db } = require('.env')
 
 const pool = new Pool({
-  user: 'postgres',
-  password: 'root',
-  host: 'localhost',
-  port: 5432,
-  database: 'shopping_cart'
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  database: process.env.DB_DATABASE
 })
-
-// DB_USER = postgres
-// DB_PASSWORD = root
-// DB_HOST = localhost
-// DB_PORT = 5432
-// DB_DATABASE = shopping_cart
 
 module.exports = pool
