@@ -9,21 +9,20 @@ const registerUser = async (req, res) => {
     return res.status(400).json({ error: 'Todos los campos son obligatorios.' })
   }
 
-  if (password.length < 8) {
-    return res.status(400).json({ error: 'Contraseña almenos 8 caracteres.' })
-  }
+  if (name.length < 6) return res.status(400).json({ error: 'Username almenos 6 caracteres.' })
+  if (password.length < 8) return res.status(400).json({ error: 'Contraseña almenos 8 caracteres.' })
 
   const client = await pool.connect()
 
   try {
-    const emailCheckResult = await client.query('SELECT * FROM users WHERE email = $1', [email])
-    if (emailCheckResult.rows.length > 0) {
-      return res.status(400).json({ error: 'El correo electrónico ya está registrado.' })
-    }
-
     const nameCheckResult = await client.query('SELECT * FROM users WHERE name = $1', [name])
     if (nameCheckResult.rows.length > 0) {
-      return res.status(400).json({ error: 'El nombre de usuario ya está registrado.' })
+      return res.status(400).json({ error: 'Username already exist' })
+    }
+
+    const emailCheckResult = await client.query('SELECT * FROM users WHERE email = $1', [email])
+    if (emailCheckResult.rows.length > 0) {
+      return res.status(400).json({ error: 'Email already exist' })
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
