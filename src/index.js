@@ -2,7 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const productsRoutes = require('./routes/products.routes')
+const appRoutes = require('./routes/appRoutes.routes')
 
 const app = express()
 
@@ -10,7 +10,7 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(express.json())
 
-app.use(productsRoutes)
+app.use(appRoutes)
 
 app.use((err, req, res, next) => {
   return res.json({

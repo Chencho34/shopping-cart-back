@@ -9,16 +9,6 @@ const getAllProducts = async (req, res, next) => {
   }
 }
 
-// const createProduct = async (req, res, next) => {
-//   try {
-//     const { title, img, description, price, quantity, total } = req.body
-//     const result = await pool.query('INSERT INTO products(title, img, description, price, quantity, total) VALUES($1, $2, $3, $4, $5, $6) RETURNING *', [title, img, description, price, quantity, total])
-//     res.json(result.rows[0])
-//   } catch (error) {
-//     next(error)
-//   }
-// }
-
 const createProduct = async (req, res, next) => {
   try {
     // Validación de entrada

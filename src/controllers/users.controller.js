@@ -1,38 +1,62 @@
 const pool = require('../db')
 
 const getUsers = async (req, res, next) => {
+  const client = await pool.connect()
+
   try {
-    const allProducts = await pool.query('SELECT * FROM users')
-    res.json(allProducts.rows)
+    const users = await client.query('SELECT * FROM users')
+    res.json(users.rows)
   } catch (error) {
     next(error)
+  } finally {
+    client.release()
   }
 }
 
-const createUser = async (req, res, next) => {
+const getUser = async (req, res, next) => {
+  const { name } = req.params
+  const client = await pool.connect()
+
   try {
-    const { name, email, password } = req.body
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'Todos los campos son obligatorios.' })
+    const user = await client.query('SELECT * FROM users WHERE name = $1', [name])
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado.' })
     }
-    const client = await pool.connect()
-    try {
-      await client.query('BEGIN')
-      const result = await client.query('INSERT INTO users(name, email, password) VALUES($1, $2, $3) RETURNING *', [name, email, password])
-      await client.query('COMMIT')
-      res.status(201).json(result.rows[0])
-    } catch (error) {
-      await client.query('ROLLBACK')
-      throw error // Pasar el error al siguiente middleware de manejo de errores
-    } finally {
-      client.release()
-    }
+    res.json(user.rows)
   } catch (error) {
     next(error)
+  } finally {
+    client.release()
+  }
+}
+
+const deleteUser = async (req, res) => {
+  const { name } = req.body
+  const client = await pool.connect()
+
+  try {
+    await client.query('BEGIN')
+    const result = await client.query('DELETE FROM users WHERE name = $1', [name])
+
+    if (result.rowCount === 0) {
+      await client.query('ROLLBACK')
+      return res.status(400).json({ error: 'Username no encontrado.' })
+    }
+
+    await client.query('COMMIT')
+
+    return res.json({ message: 'Eliminado correctamente' })
+  } catch (error) {
+    await client.query('ROLLBACK')
+    console.log(error.stack)
+    return res.status(500).json({ error: 'Internal server error' })
+  } finally {
+    client.release()
   }
 }
 
 module.exports = {
   getUsers,
-  createUser
+  deleteUser,
+  getUser
 }
