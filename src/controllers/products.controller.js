@@ -9,6 +9,23 @@ const getAllProducts = async (req, res, next) => {
   }
 }
 
+const getProduct = async (req, res, next) => {
+  const { id } = req.params
+  const client = await pool.connect()
+
+  try {
+    const product = await client.query('SELECT * FROM products WHERE id = $1', [id])
+    if (product.rows.length === 0) {
+      return res.status(404).json({ error: 'producto no encontrado.' })
+    }
+    res.json(product.rows)
+  } catch (error) {
+    next(error)
+  } finally {
+    client.release()
+  }
+}
+
 const createProduct = async (req, res, next) => {
   try {
     // Validación de entrada
@@ -37,5 +54,6 @@ const createProduct = async (req, res, next) => {
 
 module.exports = {
   getAllProducts,
-  createProduct
+  createProduct,
+  getProduct
 }
