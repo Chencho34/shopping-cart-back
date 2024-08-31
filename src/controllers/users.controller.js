@@ -5,9 +5,18 @@ const getUsers = async (req, res, next) => {
 
   try {
     const users = await client.query('SELECT * FROM users')
-    res.json(users.rows)
+
+    if (users.command === 0) {
+      return res.status(404).json({
+        succes: false,
+        message: 'No users found'
+      })
+    }
+
+    return res.status(200).json(users.rows)
   } catch (error) {
     next(error)
+    return res.status(500).json({ success: false, message: 'Internal server error' })
   } finally {
     client.release()
   }
@@ -19,19 +28,22 @@ const getUser = async (req, res, next) => {
 
   try {
     const user = await client.query('SELECT * FROM users WHERE name = $1', [name])
+
     if (user.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado.' })
+      return res.status(404).json({ error: `User ${name} not found` })
     }
-    res.json(user.rows)
+
+    return res.status(200).json(user.rows[0])
   } catch (error) {
     next(error)
+    return res.status(500).json({ message: 'Internal server error' })
   } finally {
     client.release()
   }
 }
 
 const deleteUser = async (req, res) => {
-  const { name } = req.body
+  const { name } = req.params
   const client = await pool.connect()
 
   try {
@@ -49,7 +61,7 @@ const deleteUser = async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK')
     console.log(error.stack)
-    return res.status(500).json({ error: 'Internal server error' })
+    return res.status(500).json({ message: 'Internal server error' })
   } finally {
     client.release()
   }

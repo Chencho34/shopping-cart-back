@@ -12,11 +12,12 @@ router.post('/login', loginUser)
 
 //* User routes
 router.get('/users', getUsers)
-router.get('/users/:name', getUser)
-router.delete('/users', deleteUser)
+router.get('/user/:name', getUser)
+// router.delete('/users', deleteUser)
+router.delete('/user/:name', deleteUser)
 
 //* Products routes
 router.get('/products', getAllProducts)
-router.get('/products/:id', getProduct)
+router.get('/product/:id', getProduct)
 
 module.exports = router
