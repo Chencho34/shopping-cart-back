@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const registerUser = async (req, res) => {
-  const { name, email, password } = req.body
+  const { name, email, password, role } = req.body
 
   if (!name || !email || !password) {
     return res.status(400).json({ error: 'Todos los campos son obligatorios.' })
@@ -26,9 +26,10 @@ const registerUser = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
+    const userRole = role || 'user'
 
     await client.query('BEGIN')
-    const result = await pool.query('INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *', [name, email, hashedPassword])
+    const result = await pool.query('INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *', [name, email, hashedPassword, userRole])
     await client.query('COMMIT')
 
     const user = result.rows[0]
@@ -38,7 +39,7 @@ const registerUser = async (req, res) => {
     await client.query('ROLLBACK')
 
     console.error('Error registering user:', error)
-    res.status(500).json({ error: 'Internal server error' })
+    res.status(500).json({ error: 'Error creating user' })
   } finally {
     client.release()
   }
@@ -73,7 +74,7 @@ const loginUser = async (req, res) => {
       expiresIn: '1h'
     })
 
-    res.json({ message: 'Login successful', token })
+    res.json({ message: 'Login successful', token, user })
   } catch (error) {
     console.error('Error logging in:', error)
     res.status(500).json({ error: 'Internal server error' })

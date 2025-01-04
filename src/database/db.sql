@@ -1,16 +1,19 @@
 CREATE TABLE products (
-  id SERIAL PRIMARY KEY, 
-  title varchar (255) NOT NULL, 
-  img varchar(255), 
-  description varchar(255), 
-  price int4 NOT NULL, 
-  quantity int4 NOT NULL, 
-  total int4 NOT NULL
+    id SERIAL PRIMARY KEY, -- Identificador único
+    img TEXT NOT NULL, -- URL de la imagen
+    title TEXT NOT NULL, -- Título del producto
+    price NUMERIC(10, 2) NOT NULL, -- Precio del producto
+    quantity INTEGER NOT NULL, -- Cantidad de productos (debe ser >= 0)
+    description TEXT NOT NULL, -- Descripción del producto
+    category TEXT NOT NULL, -- Categoría del producto
+    discount NUMERIC(5, 2) -- Descuento en porcentaje (opcional)
 );
 
 CREATE TABLE users (
-  user_id SERIAL NOT NULL, 
-  user_name varchar(255) UNIQUE, 
-  user_email varchar(255) UNIQUE, 
-  user_password varchar(255), PRIMARY KEY (user_id)
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) UNIQUE NOT NULL,
+  email VARCHAR(150) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  role VARCHAR(50) NOT NULL DEFAULT 'user',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
